@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { Row } from "reactstrap";
 import testJsonData from "../../server/testJsonData";
 import EmployeeCard from "./EmployeeCard";
-import _ from "lodash";
 
 const ArchiveEmployee = () => {
   const [localStorageMet, setLocalStorageMet] = useState(
@@ -13,17 +12,31 @@ const ArchiveEmployee = () => {
 
   // useEffect - update localstorage when check or unchecked checkbox
   useEffect(() => {
-    localStorage.setItem("met", JSON.stringify(localStorageMet));
+    if (localStorageMet) {
+      localStorage.setItem("met", JSON.stringify(localStorageMet) || []);
+    }
   }, [localStorageMet]);
 
   //handle checkbox click
-  const handleClickCheckBox = (event, id) => {
+  const handleClickCheckBox = (
+    event,
+    avatar,
+    email,
+    first_name,
+    last_name,
+    id
+  ) => {
     if (event.target.checked) {
-      const addToStorage = [...localStorageMet, id];
-      setLocalStorageMet(_.uniq(addToStorage));
+      // const addToStorage = [...localStorageMet, id];
+      // setLocalStorageMet(_.uniq(addToStorage));
+      const addToStorage = {
+        ...localStorageMet,
+        [id]: { id, avatar, email, first_name, last_name },
+      };
+      setLocalStorageMet(addToStorage);
     } else {
-      const removeStorage = localStorageMet.filter((el) => el !== id);
-      setLocalStorageMet(_.uniq(removeStorage));
+      const deleteToStorage = { ...localStorageMet, [id]: undefined };
+      setLocalStorageMet(deleteToStorage);
     }
   };
 
