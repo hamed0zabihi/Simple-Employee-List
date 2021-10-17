@@ -13,4 +13,4 @@ export const Store = createStore(
 //
 Store.dispatch(fetchEmployees());
 //subscribe
-Store.subscribe(() => console.log(Store.getState()));
+// Store.subscribe(() => console.log(Store.getState()));

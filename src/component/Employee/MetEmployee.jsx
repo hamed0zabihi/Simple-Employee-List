@@ -17,8 +17,8 @@ const MetEmployee = () => {
         ""
       )}
       <Row className=" align-content-end cards-section card-deck my-5 ">
-        {Object.values(dataInLocalStorage).map((el) => (
-          <EmployeeCard key={el.id} {...el} />
+        {Object.values(dataInLocalStorage).map((el, index) => (
+          <EmployeeCard key={index} {...el} />
         ))}
       </Row>
     </Container>

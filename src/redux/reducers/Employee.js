@@ -18,6 +18,21 @@ export const employees = (state = initialState, action) => {
         employees: action.payload.data,
         total_pages: action.payload.total_pages,
       };
+    case Types.MET_EMPLOYEES:
+      if (state.met[action.payload.id] === undefined) {
+        return {
+          ...state,
+          met: { ...state.met, [action.payload.id]: action.payload },
+          isFetching: false,
+        };
+      } else {
+        return {
+          ...state,
+          met: { ...state.met, [action.payload.id]: undefined },
+          isFetching: false,
+        };
+      }
+
     default:
       return state;
   }

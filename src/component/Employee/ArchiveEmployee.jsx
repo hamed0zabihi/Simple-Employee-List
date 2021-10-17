@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchEmployees } from "./../../redux/actions/Employee";
+import { fetchEmployees, toggleMet } from "./../../redux/actions/Employee";
+import ReactLoading from "react-loading";
 import ReactPaginate from "react-paginate";
-import { Col, Container } from "reactstrap";
+import { Container } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Row } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import EmployeeCard from "./EmployeeCard";
 
 const ArchiveEmployee = () => {
   const Employees = useSelector((state) => state.employees);
   const dispatch = useDispatch();
-
   const [localStorageMet, setLocalStorageMet] = useState(
     JSON.parse(localStorage.getItem("met"))
   );
+
   // current page
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -26,13 +27,14 @@ const ArchiveEmployee = () => {
 
   // handle page for pagination
   const handlePageClick = (data) => {
+    // data from react-paginate
     let { selected } = data;
-    console.log("selected", selected);
     // if we want use offset
     // let offset = Math.ceil(selected * this.props.perPage);
     dispatch(fetchEmployees(selected + 1));
     setCurrentPage(selected);
   };
+
   //handle checkbox click
   const handleClickCheckBox = (
     event,
@@ -42,12 +44,14 @@ const ArchiveEmployee = () => {
     last_name,
     id
   ) => {
+    let newEmployee = { id, avatar, email, first_name, last_name };
+    //met save in redux state
+    dispatch(toggleMet(newEmployee));
+    //met save in localstorage - when refreshed, Met Data is not lost
     if (event.target.checked) {
-      // const addToStorage = [...localStorageMet, id];
-      // setLocalStorageMet(_.uniq(addToStorage));
       const addToStorage = {
         ...localStorageMet,
-        [id]: { id, avatar, email, first_name, last_name },
+        [id]: newEmployee,
       };
       setLocalStorageMet(addToStorage);
     } else {
@@ -58,18 +62,22 @@ const ArchiveEmployee = () => {
 
   return (
     <Container>
-      this is employee archive page
+      <span> this is employee archive page </span>
       <Link to="/met">met</Link>
       <Row className="align-items-center cards-section card-deck my-5 ">
-        {Employees.isFetching
-          ? "loading"
-          : Employees.employees.map((el) => (
-              <EmployeeCard
-                key={el.id}
-                {...el}
-                handleClickCheckBox={handleClickCheckBox}
-              />
-            ))}{" "}
+        {Employees.isFetching ? (
+          <Col md="12" className="d-flex justify-content-center">
+            <ReactLoading type="bars" color="#f00" />
+          </Col>
+        ) : (
+          Employees.employees.map((el) => (
+            <EmployeeCard
+              key={el.id}
+              {...el}
+              handleClickCheckBox={handleClickCheckBox}
+            />
+          ))
+        )}
       </Row>
       <Row className="align-items-center  my-5 ">
         <nav aria-label="Page navigation example ">
